@@ -23,7 +23,7 @@ Body Request
   }
   ```
 
-### Predict
+### 2. Predict
 - Method: `POST`
 
 - URL: `/predict`
