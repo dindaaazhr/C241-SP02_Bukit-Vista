@@ -1,21 +1,21 @@
-# API DOCUMENTATION
+# **API DOCUMENTATION**
 
-## Overview
+## **Overview**
 This documentation provides details about the API endpoints available for interacting with our service. Below, you will find the descriptions, methods, request body formats, and response structures for each endpoint.
 
-## Endpoints
+## **Endpoints**
 
-### 1. Connect
+### **1. Connect**
 This endpoint is used to check the connectivity status of the API.
-- Method: `GET`
+- **Method**: `GET`
 
-- URL: `/`
+- **URL**: `/`
 
-Body Request
+**Body Request**
 
-- Format: `None required`
+- **Format**: `None required`
 
-- Response
+- **Response**
   ```json
   {
     "status": "SUCCESS", 
@@ -23,21 +23,21 @@ Body Request
   }
   ```
 
-### 2. Predict
-- Method: `POST`
+### **2. Predict**
+- **Method**: `POST`
 
-- URL: `/predict`
+- **URL**: `/predict`
 
-Body Request
+**Body Request**
 
-- Format: `JSON`
+- **Format**: `JSON`
   ```json
   {
     "unit_id": "test" 
   }
   ```
 
-- Response
+- **Response**
   ```json
   {
     "createdAt": "2024-06-12T13:57:54.458891",
