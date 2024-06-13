@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bukit Vista - Similar Property Clustering</title>
+    <link rel="icon" href="../static/img/bukitvista.png" type="image/x-icon" />
+    <link rel="stylesheet" href="../static/style.css" />
+    <!-- link untuk dropdown with searchable text -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>Similar Property Clustering</h1>
+        <img src="../static/img/bukitvista.png" alt="Bukit Vista Logo" />
+        <form id="prediction-form" action="/predict" method="POST">
+            <select id="unit_id" name="unit_id" required>
+                <option value="" disabled selected>Pilih Unit</option>
+            </select>
+            <button type="submit" class="btn-submit">Predict</button>
+        </form>
+        <!-- TABEL ATRIBUT INPUT -->
+        <table id="tabel">
+            <thead>
+                <tr>
+                    <th>Unit ID</th>
+                    <th>Unit Name</th>
+                    <th>Property Name</th>
+                    <th>Area Name</th>
+                    <th>Type Desc</th>
+                    <th>Capacity</th>
+                    <th>Average Booking Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ unit1 }}</td>
+                    <td>{{ unit2 }}</td>
+                    <td>{{ unit3 }}</td>
+                    <td>{{ unit4 }}</td>
+                    <td>{{ unit5 }}</td>
+                    <td>{{ unit6 }}</td>
+                    <td>{{ unit7 }}</td>
+
+                </tr>
+            </tbody>
+        </table>
+        <!-- MAP 4 -->
+        <div id="map4" class="map" data-lat="{{ unit8 }}" data-lng="{{ unit9 }}"></div>
+
+        <!--TABEL HASIL PERTAMA -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Unit ID</th>
+                    <th>Unit Name</th>
+                    <th>Property Name</th>
+                    <th>Area Name</th>
+                    <th>Type Desc</th>
+                    <th>Capacity</th>
+                    <th>Average Booking Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ result1_1 }}</td>
+                    <td>{{ result1_2 }}</td>
+                    <td>{{ result1_3 }}</td>
+                    <td>{{ result1_4 }}</td>
+                    <td>{{ result1_5 }}</td>
+                    <td>{{ result1_6 }}</td>
+                    <td>{{ result1_7 }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- MAP 1 -->
+        <div id="map1" class="map" data-lat="{{ result1_8 }}" data-lng="{{ result1_9 }}"></div>
+
+        <!-- TABEL HASIL KEDUA -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Unit ID</th>
+                    <th>Unit Name</th>
+                    <th>Property Name</th>
+                    <th>Area Name</th>
+                    <th>Type Desc</th>
+                    <th>Capacity</th>
+                    <th>Average Booking Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ result2_1 }}</td>
+                    <td>{{ result2_2 }}</td>
+                    <td>{{ result2_3 }}</td>
+                    <td>{{ result2_4 }}</td>
+                    <td>{{ result2_5 }}</td>
+                    <td>{{ result2_6 }}</td>
+                    <td>{{ result2_7 }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- MAP 2 -->
+        <div id="map2" class="map" data-lat="{{ result2_8 }}" data-lng="{{ result2_9 }}"></div>
+
+        <!-- TABEL HASIL KETIGA -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Unit ID</th>
+                    <th>Unit Name</th>
+                    <th>Property Name</th>
+                    <th>Area Name</th>
+                    <th>Type Desc</th>
+                    <th>Capacity</th>
+                    <th>Average Booking Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ result3_1 }}</td>
+                    <td>{{ result3_2 }}</td>
+                    <td>{{ result3_3 }}</td>
+                    <td>{{ result3_4 }}</td>
+                    <td>{{ result3_5 }}</td>
+                    <td>{{ result3_6 }}</td>
+                    <td>{{ result3_7 }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- MAP 3 -->
+        <div id="map3" class="map" data-lat="{{ result3_8 }}" data-lng="{{ result3_9 }}"></div>
+    </div>
+    <!-- Script untuk buat map -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        function initializeMap(mapId) {
+            var map = L.map(mapId).setView(
+                [
+                    document.getElementById(mapId).dataset.lat,
+                    document.getElementById(mapId).dataset.lng,
+                ],
+                15
+            );
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "© OpenStreetMap contributors",
+            }).addTo(map);
+
+            L.marker([
+                document.getElementById(mapId).dataset.lat,
+                document.getElementById(mapId).dataset.lng,
+            ])
+                .addTo(map)
+                .bindPopup("A sample location.");
+        }
+
+        initializeMap("map1");
+        initializeMap("map2");
+        initializeMap("map3");
+        initializeMap("map4");
+    </script>
+    <!-- Script untuk dropdown with searchable text -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#unit_id").select2();
+        });
+    </script>
+    <!-- Olah isi dari dropdown -->
+    <script>
+        var jsonData = {
+            units: [
+            {
+      "value": "UN0165",
+      "label": "UN0165 - Standard 1 - Bingin - Bingin Ombak"
+    },
+    {
+      "value": "UN1536",
+      "label": "UN1536 - Standard 2 - Bingin - Bingin Ombak"
+    },
+    {
+      "value": "UN1537",
+      "label": "UN1537 - Standard 3 - Bingin - Bingin Ombak"
+    },
+    {
+      "value": "UN1538",
+      "label": "UN1538 - Standard 4 - Bingin - Bingin Ombak"
+    },
+    {
+      "value": "UN1539",
+      "label": "UN1539 - Apartment - 1 Lantai 1 - Bingin - Bingin Ombak"
+    },
+    {
+      "value": "UN1540",
+      "label": "UN1540 - Apartment - 2 Lantai 2 - Bingin - Bingin Ombak"
+    },
+    {
+      "value": "UN0366",
+      "label": "UN0366 - Room 01 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0367",
+      "label": "UN0367 - Room 02 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0368",
+      "label": "UN0368 - Room 05 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0369",
+      "label": "UN0369 - Room 06 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0372",
+      "label": "UN0372 - Room 03 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0373",
+      "label": "UN0373 - Room 04 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0374",
+      "label": "UN0374 - Room 11 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0375",
+      "label": "UN0375 - Room 12 - Bingin - Kembang Kuning"
+    },
+    {
+      "value": "UN0382",
+      "label": "UN0382 - Guesthouse 1 - Uluwatu - Kubu Nyang Nyang"
+    },
+    {
+      "value": "UN0384",
+      "label": "UN0384 - Guesthouse 3 - Uluwatu - Kubu Nyang Nyang"
+    },
+    {
+      "value": "UN0385",
+      "label": "UN0385 - Guesthouse 4 - Uluwatu - Kubu Nyang Nyang"
+    },
+    {
+      "value": "UN0386",
+      "label": "UN0386 - Guesthouse 5 - Uluwatu - Kubu Nyang Nyang"
+    },
+    {
+      "value": "UN3098",
+      "label": "UN3098 - Guesthouse 2 - Uluwatu - Kubu Nyang Nyang"
+    },
+    {
+      "value": "UN0601",
+      "label": "UN0601 - Me Villa A - Canggu - ME Villa Batu Mejan"
+    },
+    {
+      "value": "UN0602",
+      "label": "UN0602 - B - Canggu - ME Villa Batu Mejan"
+    },
+    {
+      "value": "UN0603",
+      "label": "UN0603 - C - Canggu - ME Villa Batu Mejan"
+    },
+    {
+      "value": "UN0604",
+      "label": "UN0604 - D - Canggu - ME Villa Batu Mejan"
+    },
+    {
+      "value": "UN0605",
+      "label": "UN0605 - E - Canggu - ME Villa Batu Mejan"
+    },
+    {
+      "value": "UN0671",
+      "label": "UN0671 - Lot 3 - Nusa Dua - NDBV Lot 3"
+    },
+    {
+      "value": "UN0672",
+      "label": "UN0672 - Lot 6 - Nusa Dua - NDBV Lot 6"
+    },
+    {
+      "value": "UN0677",
+      "label": "UN0677 - 2A - Ngupasan - Omah Gerjen 29"
+    },
+    {
+      "value": "UN0678",
+      "label": "UN0678 - 2B - Ngupasan - Omah Gerjen 29"
+    },
+    {
+      "value": "UN0679",
+      "label": "UN0679 - 3A - Ngupasan - Omah Gerjen 29"
+    },
+    {
+      "value": "UN0680",
+      "label": "UN0680 - 3B - Ngupasan - Omah Gerjen 29"
+    },
+    {
+      "value": "UN1000",
+      "label": "UN1000 - 214 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1001",
+      "label": "UN1001 - 215 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1002",
+      "label": "UN1002 - 216 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1003",
+      "label": "UN1003 - 217 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1004",
+      "label": "UN1004 - 218 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1007",
+      "label": "UN1007 - 221 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1008",
+      "label": "UN1008 - 222 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1009",
+      "label": "UN1009 - 223 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1010",
+      "label": "UN1010 - 224 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1014",
+      "label": "UN1014 - 104 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1015",
+      "label": "UN1015 - 105 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1016",
+      "label": "UN1016 - 106 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1017",
+      "label": "UN1017 - 107 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1018",
+      "label": "UN1018 - 108 - Uluwatu - The Gong"
+    },
+    {
+      "value": "UN1135",
+      "label": "UN1135 - Uluwatu Village House - Room 7 - Uluwatu - Uluwatu Village House"
+    },
+    {
+      "value": "UN1136",
+      "label": "UN1136 - Uluwatu Village House - Room 8 - Uluwatu - Uluwatu Village House"
+    },
+    {
+      "value": "UN1169",
+      "label": "UN1169 - Villa 1 (Wayan) - Jimbaran - Villa Arindra"
+    },
+    {
+      "value": "UN1170",
+      "label": "UN1170 - Villa 2 (Made) - Jimbaran - Villa Arindra"
+    },
+    {
+      "value": "UN1172",
+      "label": "UN1172 - Villa 3 (Nyoman) - Jimbaran - Villa Arindra"
+    },
+    {
+      "value": "UN1173",
+      "label": "UN1173 - Villa 4 (Ketut) - Jimbaran - Villa Arindra"
+    },
+    {
+      "value": "UN1223",
+      "label": "UN1223 - Istana Willy - Entire Villa - Ungasan - Villa Istana Willy"
+    },
+    {
+      "value": "UN1230",
+      "label": "UN1230 - Villa - Jimbaran - Villa Kanha"
+    },
+    {
+      "value": "UN1293",
+      "label": "UN1293 - Villa - Bingin - Villa Tortoise"
+    },
+    {
+      "value": "UN1295",
+      "label": "UN1295 - Room 1 - Bingin - Villa Tortoise"
+    },
+    {
+      "value": "UN3040",
+      "label": "UN3040 - Room 2 - Bingin - Villa Tortoise"
+    },
+    {
+      "value": "UN1395",
+      "label": "UN1395 - Room 1 - Bingin - Teges Asri"
+    },
+    {
+      "value": "UN1396",
+      "label": "UN1396 - Room 2 - Bingin - Teges Asri"
+    },
+    {
+      "value": "UN1397",
+      "label": "UN1397 - Room 3 - Bingin - Teges Asri"
+    },
+    {
+      "value": "UN1398",
+      "label": "UN1398 - Room 4 - Bingin - Teges Asri"
+    },
+    {
+      "value": "UN1399",
+      "label": "UN1399 - Room 5 - Bingin - Teges Asri"
+    },
+    {
+      "value": "UN1400",
+      "label": "UN1400 - Room 6 - Bingin - Teges Asri"
+    },
+    {
+      "value": "UN1401",
+      "label": "UN1401 - Room 7 - Bingin - Teges Asri"
+    },
+    {
+      "value": "UN1722",
+      "label": "UN1722 - Room 1 - Uluwatu - Breeze Hidden Village"
+    },
+    {
+      "value": "UN1724",
+      "label": "UN1724 - Room 2 - Uluwatu - Breeze Hidden Village"
+    },
+    {
+      "value": "UN1729",
+      "label": "UN1729 - Room 4 - Uluwatu - Breeze Hidden Village"
+    },
+    {
+      "value": "UN1730",
+      "label": "UN1730 - Room 3 - Uluwatu - Breeze Hidden Village"
+    },
+    {
+      "value": "UN2371",
+      "label": "UN2371 - Wooden 1 - Uluwatu - Breeze Hidden Village"
+    },
+    {
+      "value": "UN2377",
+      "label": "UN2377 - Wooden 2 - Uluwatu - Breeze Hidden Village"
+    },
+    {
+      "value": "UN1897",
+      "label": "UN1897 - Villa A - Jimbaran - Villa Bahagia"
+    },
+    {
+      "value": "UN1898",
+      "label": "UN1898 - Villa B - Jimbaran - Villa Bahagia"
+    },
+    {
+      "value": "UN1944",
+      "label": "UN1944 - Room 5 - Padang Padang - Despacito Loft & Lounge"
+    },
+    {
+      "value": "UN1945",
+      "label": "UN1945 - Room 4 - Padang Padang - Despacito Loft & Lounge"
+    },
+    {
+      "value": "UN1946",
+      "label": "UN1946 - Room 1 - Padang Padang - Despacito Loft & Lounge"
+    },
+    {
+      "value": "UN1947",
+      "label": "UN1947 - Room 2 - Padang Padang - Despacito Loft & Lounge"
+    },
+    {
+      "value": "UN1948",
+      "label": "UN1948 - Room 3 - Padang Padang - Despacito Loft & Lounge"
+    },
+    {
+      "value": "UN1949",
+      "label": "UN1949 - Room 6 - Padang Padang - Despacito Loft & Lounge"
+    },
+    {
+      "value": "UN1970",
+      "label": "UN1970 - Room 1 - Nusa Penida - Kinton Guesthouse"
+    },
+    {
+      "value": "UN1974",
+      "label": "UN1974 - Room 2 - Nusa Penida - Kinton Guesthouse"
+    },
+    {
+      "value": "UN1975",
+      "label": "UN1975 - Room 3 - Nusa Penida - Kinton Guesthouse"
+    },
+    {
+      "value": "UN1976",
+      "label": "UN1976 - Room 4 - Nusa Penida - Kinton Guesthouse"
+    },
+    {
+      "value": "UN1977",
+      "label": "UN1977 - Room 5 - Nusa Penida - Kinton Guesthouse"
+    },
+    {
+      "value": "UN2001",
+      "label": "UN2001 - Standard 2 - Nusa Penida - Goa Giri Hill Bungalow"
+    },
+    {
+      "value": "UN2003",
+      "label": "UN2003 - Superior 4 - Nusa Penida - Goa Giri Hill Bungalow"
+    },
+    {
+      "value": "UN2902",
+      "label": "UN2902 - Standard 1 - Nusa Penida - Goa Giri Hill Bungalow"
+    },
+    {
+      "value": "UN2903",
+      "label": "UN2903 - Superior 3 - Nusa Penida - Goa Giri Hill Bungalow"
+    },
+    {
+      "value": "UN2124",
+      "label": "UN2124 - Room 1 - Nusa Penida - Warisan Homestay Nusa Penida"
+    },
+    {
+      "value": "UN2125",
+      "label": "UN2125 - Room 2 - Nusa Penida - Warisan Homestay Nusa Penida"
+    },
+    {
+      "value": "UN2126",
+      "label": "UN2126 - Room 3 - Nusa Penida - Warisan Homestay Nusa Penida"
+    },
+    {
+      "value": "UN2127",
+      "label": "UN2127 - Room 4 - Nusa Penida - Warisan Homestay Nusa Penida"
+    },
+    {
+      "value": "UN2153",
+      "label": "UN2153 - Joglo 1 - Canggu - Kamisama Homestay"
+    },
+    {
+      "value": "UN2160",
+      "label": "UN2160 - Joglo 2 - Canggu - Kamisama Homestay"
+    },
+    {
+      "value": "UN2847",
+      "label": "UN2847 - Janger - Canggu - Kamisama Homestay"
+    },
+    {
+      "value": "UN2848",
+      "label": "UN2848 - Oleg - Canggu - Kamisama Homestay"
+    },
+    {
+      "value": "UN2849",
+      "label": "UN2849 - Legong - Canggu - Kamisama Homestay"
+    },
+    {
+      "value": "UN2850",
+      "label": "UN2850 - Puspa - Canggu - Kamisama Homestay"
+    },
+    {
+      "value": "UN2196",
+      "label": "UN2196 - Entire - Ungasan - Maharaja Residence Homestay"
+    },
+    {
+      "value": "UN2250",
+      "label": "UN2250 - Whole - Canggu - Kubu Mesari"
+    },
+    {
+      "value": "UN2255",
+      "label": "UN2255 - Bungalow 1 - Nusa Penida - Merta Beach Bungalow"
+    },
+    {
+      "value": "UN2256",
+      "label": "UN2256 - Bungalow 2 - Nusa Penida - Merta Beach Bungalow"
+    },
+    {
+      "value": "UN2257",
+      "label": "UN2257 - Bungalow 3 - Nusa Penida - Merta Beach Bungalow"
+    },
+    {
+      "value": "UN2260",
+      "label": "UN2260 - Bungalow 4 - Nusa Penida - Merta Beach Bungalow"
+    },
+    {
+      "value": "UN2262",
+      "label": "UN2262 - Entire - Ungasan - Villa Kyl 2BR"
+    },
+    {
+      "value": "UN2266",
+      "label": "UN2266 - Entire - Ungasan - Villa Rumah Pertama"
+    },
+    {
+      "value": "UN2287",
+      "label": "UN2287 - Room 1T - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN2288",
+      "label": "UN2288 - Room 2 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN2293",
+      "label": "UN2293 - Room 3 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN2298",
+      "label": "UN2298 - Room 4 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN2301",
+      "label": "UN2301 - Room 5 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN2313",
+      "label": "UN2313 - Room 8 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN2318",
+      "label": "UN2318 - Room 9 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN3023",
+      "label": "UN3023 - Room 6T - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN3024",
+      "label": "UN3024 - Room 7 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN3025",
+      "label": "UN3025 - Room 10 - Canggu - Pondok Bagus Guesthouse"
+    },
+    {
+      "value": "UN2320",
+      "label": "UN2320 - Entire - Ubud - Pondok Nini Ubud"
+    },
+    {
+      "value": "UN2355",
+      "label": "UN2355 - NH Residence 3A - Ungasan - NH Residence"
+    },
+    {
+      "value": "UN2386",
+      "label": "UN2386 - L1 - Uluwatu - WOODEN PURI Guesthouse"
+    },
+    {
+      "value": "UN2389",
+      "label": "UN2389 - L2 - Uluwatu - WOODEN PURI Guesthouse"
+    },
+    {
+      "value": "UN2390",
+      "label": "UN2390 - L3 - Uluwatu - WOODEN PURI Guesthouse"
+    },
+    {
+      "value": "UN2393",
+      "label": "UN2393 - B1 - Uluwatu - WOODEN PURI Guesthouse"
+    },
+    {
+      "value": "UN2394",
+      "label": "UN2394 - B2 - Uluwatu - WOODEN PURI Guesthouse"
+    },
+    {
+      "value": "UN2395",
+      "label": "UN2395 - Bungalow 1 - Uluwatu - Uluwatu Kayana Bungalows"
+    },
+    {
+      "value": "UN2396",
+      "label": "UN2396 - Bungalow 2 - Uluwatu - Uluwatu Kayana Bungalows"
+    },
+    {
+      "value": "UN2397",
+      "label": "UN2397 - Bungalow 3 - Uluwatu - Uluwatu Kayana Bungalows"
+    },
+    {
+      "value": "UN2398",
+      "label": "UN2398 - Bungalow 4 - Uluwatu - Uluwatu Kayana Bungalows"
+    },
+    {
+      "value": "UN2399",
+      "label": "UN2399 - Bungalow 5 - Uluwatu - Uluwatu Kayana Bungalows"
+    },
+    {
+      "value": "UN2400",
+      "label": "UN2400 - Villa - Ubud - Pondok Nini Villa"
+    },
+    {
+      "value": "UN2407",
+      "label": "UN2407 - Room 5 - Uluwatu - Dream Breeze Village"
+    },
+    {
+      "value": "UN2408",
+      "label": "UN2408 - Room 6 - Uluwatu - Dream Breeze Village"
+    },
+    {
+      "value": "UN2467",
+      "label": "UN2467 - Room 1 - Uluwatu - Dream Breeze Village"
+    },
+    {
+      "value": "UN2468",
+      "label": "UN2468 - Room 2 - Uluwatu - Dream Breeze Village"
+    },
+    {
+      "value": "UN2469",
+      "label": "UN2469 - Room 3 - Uluwatu - Dream Breeze Village"
+    },
+    {
+      "value": "UN2470",
+      "label": "UN2470 - Room 4 - Uluwatu - Dream Breeze Village"
+    },
+    {
+      "value": "UN2471",
+      "label": "UN2471 - Room 7L - Uluwatu - Dream Breeze Village"
+    },
+    {
+      "value": "UN2436",
+      "label": "UN2436 - Room 1 - Canggu - Amazon Guesthouse"
+    },
+    {
+      "value": "UN2437",
+      "label": "UN2437 - Room 2 - Canggu - Amazon Guesthouse"
+    },
+    {
+      "value": "UN2439",
+      "label": "UN2439 - Room 4 - Canggu - Amazon Guesthouse"
+    },
+    {
+      "value": "UN2442",
+      "label": "UN2442 - Room 7 - Canggu - Amazon Guesthouse"
+    },
+    {
+      "value": "UN2444",
+      "label": "UN2444 - Villa 1 - Ungasan - Villa Blu Apsara"
+    },
+    {
+      "value": "UN2454",
+      "label": "UN2454 - Room 1 - Bingin - Didi's Place"
+    },
+    {
+      "value": "UN2456",
+      "label": "UN2456 - Room 2 - Bingin - Didi's Place"
+    },
+    {
+      "value": "UN2493",
+      "label": "UN2493 - Room 1 - Canggu - Kencana homestay"
+    },
+    {
+      "value": "UN2494",
+      "label": "UN2494 - Room 2 - Canggu - Kencana homestay"
+    },
+    {
+      "value": "UN2495",
+      "label": "UN2495 - Room 3 - Canggu - Kencana homestay"
+    },
+    {
+      "value": "UN2496",
+      "label": "UN2496 - Room 4 - Canggu - Kencana homestay"
+    },
+    {
+      "value": "UN2497",
+      "label": "UN2497 - Room 5 - Canggu - Kencana homestay"
+    },
+    {
+      "value": "UN2498",
+      "label": "UN2498 - Room 6 - Canggu - Kencana homestay"
+    },
+    {
+      "value": "UN2499",
+      "label": "UN2499 - Room 7 - Canggu - Kencana homestay"
+    },
+    {
+      "value": "UN2500",
+      "label": "UN2500 - Room 1 - Uluwatu - Asri Village"
+    },
+    {
+      "value": "UN2501",
+      "label": "UN2501 - Room 2 - Uluwatu - Asri Village"
+    },
+    {
+      "value": "UN2502",
+      "label": "UN2502 - Room 3 - Uluwatu - Asri Village"
+    },
+    {
+      "value": "UN2503",
+      "label": "UN2503 - Room 4 - Uluwatu - Asri Village"
+    },
+    {
+      "value": "UN2504",
+      "label": "UN2504 - Room 5 - Uluwatu - Asri Village"
+    },
+    {
+      "value": "UN2505",
+      "label": "UN2505 - Room 6 - Uluwatu - Asri Village"
+    },
+    {
+      "value": "UN2532",
+      "label": "UN2532 - Lumbung 1 - Uluwatu - Brisk Homestay"
+    },
+    {
+      "value": "UN2533",
+      "label": "UN2533 - Lumbung 2 - Uluwatu - Brisk Homestay"
+    },
+    {
+      "value": "UN2534",
+      "label": "UN2534 - Standard 3 - Uluwatu - Brisk Homestay"
+    },
+    {
+      "value": "UN2535",
+      "label": "UN2535 - Standard 4 - Uluwatu - Brisk Homestay"
+    },
+    {
+      "value": "UN2536",
+      "label": "UN2536 - Standard 5 - Uluwatu - Brisk Homestay"
+    },
+    {
+      "value": "UN2538",
+      "label": "UN2538 - Villa 1 - Uluwatu - Villa Belle-Isle"
+    },
+    {
+      "value": "UN2540",
+      "label": "UN2540 - 4BR - Uluwatu - Pondok Dahayu"
+    },
+    {
+      "value": "UN2545",
+      "label": "UN2545 - Villa 1 - Bingin - Bingin Sun & Moon Villas"
+    },
+    {
+      "value": "UN2546",
+      "label": "UN2546 - Villa 2 - Bingin - Bingin Sun & Moon Villas"
+    },
+    {
+      "value": "UN2547",
+      "label": "UN2547 - Villa 3 - Bingin - Bingin Sun & Moon Villas"
+    },
+    {
+      "value": "UN2548",
+      "label": "UN2548 - Villa 4 - Bingin - Bingin Sun & Moon Villas"
+    },
+    {
+      "value": "UN2549",
+      "label": "UN2549 - Villa 5 - Bingin - Bingin Sun & Moon Villas"
+    },
+    {
+      "value": "UN2566",
+      "label": "UN2566 - Room 1 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN2735",
+      "label": "UN2735 - Room 2 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN2736",
+      "label": "UN2736 - Room 3 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN2740",
+      "label": "UN2740 - Room 7 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN2741",
+      "label": "UN2741 - Room 8 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN2742",
+      "label": "UN2742 - Room 9 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN2820",
+      "label": "UN2820 - Room 10 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN3034",
+      "label": "UN3034 - Room 5 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN3035",
+      "label": "UN3035 - Room 4 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN3036",
+      "label": "UN3036 - Room 6 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN3039",
+      "label": "UN3039 - Room 11 - Nusa Penida - Villa Olala Penida Sea View"
+    },
+    {
+      "value": "UN2599",
+      "label": "UN2599 - 9D - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2602",
+      "label": "UN2602 - 10D - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2603",
+      "label": "UN2603 - 11D - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2913",
+      "label": "UN2913 - 14D - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2946",
+      "label": "UN2946 - 20 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2947",
+      "label": "UN2947 - 21 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2948",
+      "label": "UN2948 - 22 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2950",
+      "label": "UN2950 - 15 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2951",
+      "label": "UN2951 - 16 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2952",
+      "label": "UN2952 - 17 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2953",
+      "label": "UN2953 - 18 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN3030",
+      "label": "UN3030 - 19 - Canggu - Armadillo Guesthouse"
+    },
+    {
+      "value": "UN2619",
+      "label": "UN2619 - Villa 1 - Ubud - Pondok Nini Joglo"
+    },
+    {
+      "value": "UN2620",
+      "label": "UN2620 - Unit 1 - Canggu - ME Villa Kayu Tulang"
+    },
+    {
+      "value": "UN2621",
+      "label": "UN2621 - Unit 2 - Canggu - ME Villa Kayu Tulang"
+    },
+    {
+      "value": "UN2642",
+      "label": "UN2642 - Inn 1 - Nusa Penida - Madeira inn villa"
+    },
+    {
+      "value": "UN2643",
+      "label": "UN2643 - Inn 2 - Nusa Penida - Madeira inn villa"
+    },
+    {
+      "value": "UN2644",
+      "label": "UN2644 - Inn 3 - Nusa Penida - Madeira inn villa"
+    },
+    {
+      "value": "UN2645",
+      "label": "UN2645 - Inn 4 - Nusa Penida - Madeira inn villa"
+    },
+    {
+      "value": "UN2659",
+      "label": "UN2659 - Room 1 - Nusa Penida - Kukuh Penida Village"
+    },
+    {
+      "value": "UN2660",
+      "label": "UN2660 - Room 2 - Nusa Penida - Kukuh Penida Village"
+    },
+    {
+      "value": "UN2661",
+      "label": "UN2661 - Room 3 - Nusa Penida - Kukuh Penida Village"
+    },
+    {
+      "value": "UN2662",
+      "label": "UN2662 - Room 4 - Nusa Penida - Kukuh Penida Village"
+    },
+    {
+      "value": "UN2663",
+      "label": "UN2663 - Room 7 - Nusa Penida - Kukuh Penida Village"
+    },
+    {
+      "value": "UN2693",
+      "label": "UN2693 - 1 - Canggu - Rara Guesthouse "
+    },
+    {
+      "value": "UN2694",
+      "label": "UN2694 - 2 - Canggu - Rara Guesthouse "
+    },
+    {
+      "value": "UN2696",
+      "label": "UN2696 - 4 - Canggu - Rara Guesthouse "
+    },
+    {
+      "value": "UN2732",
+      "label": "UN2732 - Villa 1 - Kutuh - Villa Arcturus"
+    },
+    {
+      "value": "UN2757",
+      "label": "UN2757 - Unit 1 - Ungasan - Beach House 55"
+    },
+    {
+      "value": "UN2759",
+      "label": "UN2759 - Room 1 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN2770",
+      "label": "UN2770 - Room 2 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN2771",
+      "label": "UN2771 - Room 3 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN2772",
+      "label": "UN2772 - Room 4 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN2773",
+      "label": "UN2773 - Room 5 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN2774",
+      "label": "UN2774 - Room 6 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN3072",
+      "label": "UN3072 - Room 7 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN3073",
+      "label": "UN3073 - Room 8 - Bingin - The Bingin Green View"
+    },
+    {
+      "value": "UN2760",
+      "label": "UN2760 - Entire - Ngupasan - Villa Joglo Kawung"
+    },
+    {
+      "value": "UN2761",
+      "label": "UN2761 - Villa 1 - Ungasan - Villa Angin"
+    },
+    {
+      "value": "UN2785",
+      "label": "UN2785 - Entire - Sinduadi - Villa Omah Kangen"
+    },
+    {
+      "value": "UN2786",
+      "label": "UN2786 - Villa 1 - Ungasan - Blumaya"
+    },
+    {
+      "value": "UN2788",
+      "label": "UN2788 - Omah Kirana - Entire - Timbulharjo - OMAH KIRANA"
+    },
+    {
+      "value": "UN2790",
+      "label": "UN2790 - Entire - Ungasan - Villa Tupa"
+    },
+    {
+      "value": "UN2794",
+      "label": "UN2794 - Cottage 1 - Nusa Penida - Sekar Penida Cottages"
+    },
+    {
+      "value": "UN2795",
+      "label": "UN2795 - Cottage 2 - Nusa Penida - Sekar Penida Cottages"
+    },
+    {
+      "value": "UN2936",
+      "label": "UN2936 - Sekar Penida Honeymoon - Nusa Penida - Sekar Penida Cottages"
+    },
+    {
+      "value": "UN3105",
+      "label": "UN3105 - Honeymoon Room 2 - Nusa Penida - Sekar Penida Cottages"
+    },
+    {
+      "value": "UN2797",
+      "label": "UN2797 - Ayang Cempaka - Caturtunggal - Apartment Ayang Cempaka Utara"
+    },
+    {
+      "value": "UN2806",
+      "label": "UN2806 - Unit 1 - Nusa Dua - THE MIRACLE VILLA"
+    },
+    {
+      "value": "UN2808",
+      "label": "UN2808 - Glamping 1 - Kintamani - Cloud Hills Glamping"
+    },
+    {
+      "value": "UN2809",
+      "label": "UN2809 - Glamping 2 - Kintamani - Cloud Hills Glamping"
+    },
+    {
+      "value": "UN2810",
+      "label": "UN2810 - Glamping 3 - Kintamani - Cloud Hills Glamping"
+    },
+    {
+      "value": "UN2852",
+      "label": "UN2852 - Cabin 1 - Kintamani - Cloud Hills Glamping"
+    },
+    {
+      "value": "UN2887",
+      "label": "UN2887 - Cabin 2 - Kintamani - Cloud Hills Glamping"
+    },
+    {
+      "value": "UN2846",
+      "label": "UN2846 - Bird Hills - Entire - Karangasem - Bird Hills"
+    },
+    {
+      "value": "UN2853",
+      "label": "UN2853 - Villa 3 - Umalas - Kokomo Villas"
+    },
+    {
+      "value": "UN2854",
+      "label": "UN2854 - Villa 1 - Umalas - Kokomo Villas"
+    },
+    {
+      "value": "UN2855",
+      "label": "UN2855 - Villa 2 - Umalas - Kokomo Villas"
+    },
+    {
+      "value": "UN2856",
+      "label": "UN2856 - Villa 5 - Umalas - Kokomo Villas"
+    },
+    {
+      "value": "UN2867",
+      "label": "UN2867 - Villa 1 - Pererenan - ME Villa Pererenan"
+    },
+    {
+      "value": "UN2868",
+      "label": "UN2868 - Villa 2 - Pererenan - ME Villa Pererenan"
+    },
+    {
+      "value": "UN2869",
+      "label": "UN2869 - Villa 3 - Pererenan - ME Villa Pererenan"
+    },
+    {
+      "value": "UN2870",
+      "label": "UN2870 - Villa 4 - Pererenan - ME Villa Pererenan"
+    },
+    {
+      "value": "UN2871",
+      "label": "UN2871 - Villa 5 - Pererenan - ME Villa Pererenan"
+    },
+    {
+      "value": "UN2872",
+      "label": "UN2872 - Entire - Nusa Penida - Putra Bali Villa"
+    },
+    {
+      "value": "UN2884",
+      "label": "UN2884 - Istana Dalton - Entire Villa - Ungasan - Istana Dalton"
+    },
+    {
+      "value": "UN2888",
+      "label": "UN2888 - Villa - 2 (1BR) - Bingin - Villa Permana"
+    },
+    {
+      "value": "UN2911",
+      "label": "UN2911 - Villa - 3 (2BR) - Bingin - Villa Permana"
+    },
+    {
+      "value": "UN2922",
+      "label": "UN2922 - Villa - 1 (2BR) - Bingin - Villa Permana"
+    },
+    {
+      "value": "UN2891",
+      "label": "UN2891 - Villa 1 - Bingin - Villa Del Sol"
+    },
+    {
+      "value": "UN2908",
+      "label": "UN2908 - Lero Jungle House - Tabanan - Lero Jungle House"
+    },
+    {
+      "value": "UN2912",
+      "label": "UN2912 - Rara Villa - Canggu - Rara Villa"
+    },
+    {
+      "value": "UN2914",
+      "label": "UN2914 - Villa - Singaraja - Four Monkeys House"
+    },
+    {
+      "value": "UN2916",
+      "label": "UN2916 - Wooden 1 - Singaraja - Four Monkeys House"
+    },
+    {
+      "value": "UN2917",
+      "label": "UN2917 - Wooden 2 - Singaraja - Four Monkeys House"
+    },
+    {
+      "value": "UN2921",
+      "label": "UN2921 - The Rampage House - Entire - Karangasem - The Rampage House"
+    },
+    {
+      "value": "UN2935",
+      "label": "UN2935 - Amerta Puratangi Villa - Ungasan - Amerta Puratangi Villa"
+    },
+    {
+      "value": "UN2937",
+      "label": "UN2937 - Penida Memories - Double 1 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN2938",
+      "label": "UN2938 - Penida Memories - Double 2 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN2939",
+      "label": "UN2939 - Penida Memories - Twin 1 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN2940",
+      "label": "UN2940 - Penida Memories - Double 3 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN3106",
+      "label": "UN3106 - Penida Memories - Upstairs Double 1 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN3107",
+      "label": "UN3107 - Penida Memories - Upstairs Double 2 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN3108",
+      "label": "UN3108 - Penida Memories - Upstairs Double 3 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN3109",
+      "label": "UN3109 - Penida Memories - Upstairs Double 4 - Nusa Penida - Penida Memories"
+    },
+    {
+      "value": "UN2943",
+      "label": "UN2943 - Villa Mango Sky - Kerobokan - Villa Mango Sky"
+    },
+    {
+      "value": "UN2944",
+      "label": "UN2944 - Bong - Private Cabin - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2954",
+      "label": "UN2954 - BONG C1 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2955",
+      "label": "UN2955 - BONG C2 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2956",
+      "label": "UN2956 - BONG C3 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2957",
+      "label": "UN2957 - BONG C4 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2958",
+      "label": "UN2958 - BONG C5 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2959",
+      "label": "UN2959 - BONG C6 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2960",
+      "label": "UN2960 - BONG C7 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2961",
+      "label": "UN2961 - BONG C8 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2967",
+      "label": "UN2967 - BONG - DORM (BUNK BEDS) 1 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2968",
+      "label": "UN2968 - BONG A 1 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2969",
+      "label": "UN2969 - BONG A 2 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2970",
+      "label": "UN2970 - BONG A 3 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2971",
+      "label": "UN2971 - BONG A 4 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2972",
+      "label": "UN2972 - BONG A 5 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2973",
+      "label": "UN2973 - BONG A 6 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2974",
+      "label": "UN2974 - BONG A 7 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2975",
+      "label": "UN2975 - BONG A 8 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2976",
+      "label": "UN2976 - BONG A 9 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2977",
+      "label": "UN2977 - BONG A 10 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2978",
+      "label": "UN2978 - BONG B 1 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2979",
+      "label": "UN2979 - BONG B 2 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2980",
+      "label": "UN2980 - BONG B 3 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2981",
+      "label": "UN2981 - BONG B 4 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2982",
+      "label": "UN2982 - BONG B 5 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2983",
+      "label": "UN2983 - BONG B 6 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2984",
+      "label": "UN2984 - BONG B 7 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2985",
+      "label": "UN2985 - BONG B 8 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2986",
+      "label": "UN2986 - BONG B 9 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2987",
+      "label": "UN2987 - BONG B 10 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN3001",
+      "label": "UN3001 - BONG - DORM (BUNK BEDS) 2 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN3002",
+      "label": "UN3002 - BONG - DORM (BUNK BEDS) 3 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN3003",
+      "label": "UN3003 - BONG - DORM (BUNK BEDS) 4 - Nusa Ceningan - Bong Hostel"
+    },
+    {
+      "value": "UN2966",
+      "label": "UN2966 - Entire Villa - Kutuh - Villa Arjuna 17"
+    },
+    {
+      "value": "UN2990",
+      "label": "UN2990 - Pondok Nini Luxury - Ubud - Pondok Nini Luxury"
+    },
+    {
+      "value": "UN2991",
+      "label": "UN2991 - Room 3 (Deluxe) - Uluwatu - Uluwatu Village House 2"
+    },
+    {
+      "value": "UN2992",
+      "label": "UN2992 - Room 4 (Deluxe) - Uluwatu - Uluwatu Village House 2"
+    },
+    {
+      "value": "UN2993",
+      "label": "UN2993 - Room 5 (Deluxe) - Uluwatu - Uluwatu Village House 2"
+    },
+    {
+      "value": "UN2994",
+      "label": "UN2994 - Room 6 (Deluxe) - Uluwatu - Uluwatu Village House 2"
+    },
+    {
+      "value": "UN2995",
+      "label": "UN2995 - Entire - Ungasan - Pondok Utari"
+    },
+    {
+      "value": "UN2996",
+      "label": "UN2996 - Entire - Bingin - Villa Raava"
+    },
+    {
+      "value": "UN2997",
+      "label": "UN2997 - Villa Gato - Pecatu - Villa Gato"
+    },
+    {
+      "value": "UN3006",
+      "label": "UN3006 - Room 9 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3007",
+      "label": "UN3007 - Room 10 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3008",
+      "label": "UN3008 - Room 11 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3009",
+      "label": "UN3009 - Room 12 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3010",
+      "label": "UN3010 - Room 7 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3011",
+      "label": "UN3011 - Room 8 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3012",
+      "label": "UN3012 - Room 1 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3013",
+      "label": "UN3013 - Room 2 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3014",
+      "label": "UN3014 - Room 4 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3015",
+      "label": "UN3015 - Room 5 - Mengwi - Suksma Guesthouse"
+    },
+    {
+      "value": "UN3020",
+      "label": "UN3020 - Entire - Bingin - San Pedro"
+    },
+    {
+      "value": "UN3022",
+      "label": "UN3022 - Villa Meji - Cottage - Uluwatu - Villa Meji"
+    },
+    {
+      "value": "UN3026",
+      "label": "UN3026 - Villa Meji - Lodge - Uluwatu - Villa Meji"
+    },
+    {
+      "value": "UN3028",
+      "label": "UN3028 - Villa Meji - Bungalow - Uluwatu - Villa Meji"
+    },
+    {
+      "value": "UN3031",
+      "label": "UN3031 - Villa Meji - Pool - Uluwatu - Villa Meji"
+    },
+    {
+      "value": "UN3029",
+      "label": "UN3029 - Villa - Pecatu - Villa Shankara Pecatu"
+    },
+    {
+      "value": "UN3032",
+      "label": "UN3032 - VIlla Anasera - Pecatu - Villa Anasera"
+    },
+    {
+      "value": "UN3038",
+      "label": "UN3038 - Casa Blanca Villa - Bingin - Well Bingin Villa"
+    },
+    {
+      "value": "UN3044",
+      "label": "UN3044 - Room Number 1 - Canggu - Canggu Bali Villa"
+    },
+    {
+      "value": "UN3045",
+      "label": "UN3045 - Room Number 2 - Canggu - Canggu Bali Villa"
+    },
+    {
+      "value": "UN3046",
+      "label": "UN3046 - Room Number 3 - Canggu - Canggu Bali Villa"
+    },
+    {
+      "value": "UN3047",
+      "label": "UN3047 - Room Number 4 - Canggu - Canggu Bali Villa"
+    },
+    {
+      "value": "UN3048",
+      "label": "UN3048 - Room Number 5 - Canggu - Canggu Bali Villa"
+    },
+    {
+      "value": "UN3049",
+      "label": "UN3049 - Joglo Room - Uluwatu - Rumah Bambu"
+    },
+    {
+      "value": "UN3050",
+      "label": "UN3050 - Standard - Room 3 - Uluwatu - Rumah Bambu"
+    },
+    {
+      "value": "UN3051",
+      "label": "UN3051 - Standard - Room 1 - Uluwatu - Rumah Bambu"
+    },
+    {
+      "value": "UN3052",
+      "label": "UN3052 - Entire - Canggu - Hattala Villa"
+    },
+    {
+      "value": "UN3053",
+      "label": "UN3053 - Bhadra Villa - Seminyak - Bhadra Villa"
+    },
+    {
+      "value": "UN3054",
+      "label": "UN3054 - Villa 1 - Ubud - Meli Villa"
+    },
+    {
+      "value": "UN3055",
+      "label": "UN3055 - Villa 2 - Ubud - Meli Villa"
+    },
+    {
+      "value": "UN3056",
+      "label": "UN3056 - Cabin 1 (AMOR) - Kintamani - Yucabin"
+    },
+    {
+      "value": "UN3057",
+      "label": "UN3057 - Cabin 2 (BELLEZA) - Kintamani - Yucabin"
+    },
+    {
+      "value": "UN3058",
+      "label": "UN3058 - Cabin 3 (CORAZON) - Kintamani - Yucabin"
+    },
+    {
+      "value": "UN3059",
+      "label": "UN3059 - Cabin 4 (DESEO) - Kintamani - Yucabin"
+    },
+    {
+      "value": "UN3060",
+      "label": "UN3060 - Cabin 5 (ETERNA) - Kintamani - Yucabin"
+    },
+    {
+      "value": "UN3061",
+      "label": "UN3061 - Cabin 6 (TRANQUILLO) - Kintamani - Yucabin"
+    },
+    {
+      "value": "UN3067",
+      "label": "UN3067 - Villa Kekayaan - Uluwatu - Villa Kekayaan"
+    },
+    {
+      "value": "UN3068",
+      "label": "UN3068 - Jineng 1 - Ungasan - Villa Plumeria Jineng"
+    },
+    {
+      "value": "UN3070",
+      "label": "UN3070 - Jineng 2 - Ungasan - Villa Plumeria Jineng"
+    },
+    {
+      "value": "UN3071",
+      "label": "UN3071 - Jineng 3 - Ungasan - Villa Plumeria Jineng"
+    },
+    {
+      "value": "UN3074",
+      "label": "UN3074 - Villa Darina Entire - Bingin - Villa Darina"
+    },
+    {
+      "value": "UN3075",
+      "label": "UN3075 - Room 1 - Pecatu - Nata Guesthouse"
+    },
+    {
+      "value": "UN3076",
+      "label": "UN3076 - Room 2 - Pecatu - Nata Guesthouse"
+    },
+    {
+      "value": "UN3077",
+      "label": "UN3077 - Room 3 - Pecatu - Nata Guesthouse"
+    },
+    {
+      "value": "UN3078",
+      "label": "UN3078 - Room 4 - Pecatu - Nata Guesthouse"
+    },
+    {
+      "value": "UN3079",
+      "label": "UN3079 - Room 5 - Pecatu - Nata Guesthouse"
+    },
+    {
+      "value": "UN3080",
+      "label": "UN3080 - Villa - Uluwatu - Villa Kelimpahan"
+    },
+    {
+      "value": "UN3081",
+      "label": "UN3081 - Entire - Ungasan - Casa Aimia"
+    },
+    {
+      "value": "UN3082",
+      "label": "UN3082 - Aki - Sanur - Mimoya Stay"
+    },
+    {
+      "value": "UN3083",
+      "label": "UN3083 - Haru - Sanur - Mimoya Stay"
+    },
+    {
+      "value": "UN3084",
+      "label": "UN3084 - Natsu - Sanur - Mimoya Stay"
+    },
+    {
+      "value": "UN3085",
+      "label": "UN3085 - Mimo - Sanur - Mimoya Stay"
+    },
+    {
+      "value": "UN3086",
+      "label": "UN3086 - Sendai - Sanur - Mimoya Stay"
+    },
+    {
+      "value": "UN3087",
+      "label": "UN3087 - Villa - Pererenan - Villa Allua"
+    },
+    {
+      "value": "UN3088",
+      "label": "UN3088 - Villa Kate - Canggu - Villa Kate"
+    },
+    {
+      "value": "UN3089",
+      "label": "UN3089 - Room 1 - Kerobokan - Villa Marlex"
+    },
+    {
+      "value": "UN3090",
+      "label": "UN3090 - Room 2 - Kerobokan - Villa Marlex"
+    },
+    {
+      "value": "UN3091",
+      "label": "UN3091 - Room 3 - Kerobokan - Villa Marlex"
+    },
+    {
+      "value": "UN3092",
+      "label": "UN3092 - Room 1 - Canggu - Kubu Kembar Guesthouse"
+    },
+    {
+      "value": "UN3093",
+      "label": "UN3093 - Room 2 - Canggu - Kubu Kembar Guesthouse"
+    },
+    {
+      "value": "UN3094",
+      "label": "UN3094 - Room 3 - Canggu - Kubu Kembar Guesthouse"
+    },
+    {
+      "value": "UN3095",
+      "label": "UN3095 - Room 4 - Canggu - Kubu Kembar Guesthouse"
+    },
+    {
+      "value": "UN3096",
+      "label": "UN3096 - Room 5 - Canggu - Kubu Kembar Guesthouse"
+    },
+    {
+      "value": "UN3097",
+      "label": "UN3097 - Room 6 - Canggu - Kubu Kembar Guesthouse"
+    },
+    {
+      "value": "UN3099",
+      "label": "UN3099 - Villa 1 - Ungasan - Lengkungan Villas"
+    },
+    {
+      "value": "UN3100",
+      "label": "UN3100 - Villa 2 - Ungasan - Lengkungan Villas"
+    },
+    {
+      "value": "UN3101",
+      "label": "UN3101 - Villa 3 - Ungasan - Lengkungan Villas"
+    },
+    {
+      "value": "UN3102",
+      "label": "UN3102 - Villa 4 - Ungasan - Lengkungan Villas"
+    },
+    {
+      "value": "UN3103",
+      "label": "UN3103 - Entire - Bingin - Villa Kaba"
+    }
+            ],
+        };
+        var unitSelect = document.getElementById("unit_id");
+
+        jsonData.units.forEach(function (unit) {
+            var option = document.createElement("option");
+            option.value = unit.value;
+            option.textContent = unit.label;
+            unitSelect.appendChild(option);
+        });
+    </script>
+
+    <script src="../services/api.js"></script>        
+    
+    <footer>© c241-sp02 - All rights reserved</footer>
+</body>
+
+</html>
